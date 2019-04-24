@@ -114,3 +114,22 @@ doi: 10.1109/ICASSP.2019.8683161 URL: http://ieeexplore.ieee.org/stamp/stamp.jsp
 doi: 10.1109/TNNLS.2016.2522401
 
 3. *Keras-RL* [github](https://github.com/keras-rl/keras-rl)
+
+
+### Citation
+
+```
+@INPROCEEDINGS{8683161,
+author={K. S. {Zarkias} and N. {Passalis} and A. {Tsantekidis} and A. {Tefas}},
+booktitle={ICASSP 2019 - 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+title={Deep Reinforcement Learning for Financial Trading Using Price Trailing},
+year={2019},
+volume={},
+number={},
+pages={3067-3071},
+keywords={Deep Reinforcement Learning;Financial Markets;Price Forecasting;Trading},
+doi={10.1109/ICASSP.2019.8683161},
+ISSN={2379-190X},
+month={May},}
+```
+
