@@ -171,10 +171,9 @@ class Trail(Environment):
         input_up = (self.data[self.position] + self.margin) - self.value  # [0] - up values_std: ~0.0006
         input_down = self.value - (self.data[self.position] - self.margin)  # [2] - down
 
-        if self.one_hot:
-            # A very simple normalization so that the input values are all in the same range (with the one hot)
-            input_up *= 1000
-            input_down *= 1000
+        # Rescale input to a better range
+        input_up = input_up / 0.0006
+        input_down = input_down / 0.0006
 
         observation = np.array([input_up, input_down])
 
