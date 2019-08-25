@@ -47,8 +47,10 @@ class Trail(Environment):
     def step(self, action):
         """
         OpenAI override function
-        One step in Env includes: take action(move agent), store the action and
-        the new value, get reward, get ready for next step(+1 position)
+        One step in the environment means:
+        1) take action: move agent to next position and make a trade action (stay, sell, buy)
+        2) store the action and the new value
+        3) get reward
 
         return: the new state, reward and if the data are done
         """
@@ -72,10 +74,14 @@ class Trail(Environment):
             state = [self.position, value, self.action, self.value]
             self.memory.append(state)
 
+            # Move the agent to the next timestep
+            self.position += 1
+
+            # Calculate the reward of the agent
             self.reward = self.get_reward()
             self.epoch_reward += self.reward
 
-            self.position += 1
+            # If the agent gets out of boundaries reset its trade position
             if self.reset_margin:
                 # if the agent gets out of boundaries reset him
                 value = self.data[self.position]

@@ -56,14 +56,14 @@ class Deng(Environment):
         else:
             self.action = 0
 
+        self.position += 1  # Move the agent to the next timestep
+
         if (self.position + 1) < self.data_size:
             state = [self.position, value, self.action]
             self.memory.append(state)
 
             self.reward = self.get_reward()
             self.epoch_reward += self.reward
-
-            self.position += 1
 
             self.observation = self.input_s()
         else:
