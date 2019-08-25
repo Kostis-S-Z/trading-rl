@@ -6,6 +6,7 @@ import os
 import random
 import numpy as np
 
+# Set indices for different trade actions
 BUY = 1
 NEUTRAL = 0
 SELL = -1
@@ -23,6 +24,7 @@ class Deng(Environment):
 
         setattr(self, "window", kwargs.get("window", 10))
 
+        # set the input shape depending on the window size
         input_shape = self.window
 
         super().__init__(folder, steps, train_data, test_data, test_starts, input_shape, **kwargs)
@@ -39,29 +41,35 @@ class Deng(Environment):
     def step(self, action):
         """
         OpenAI override function
-        One step in Env includes: take action(move agent), store the action and
-        the new value, get reward, get ready for next step(+1 position)
+        One step in the environment means:
+        1) take action: move agent to next position and make a trade action (stay, sell, buy)
+        2) store the action and the new value
+        3) get reward
 
         return: the new state, reward and if the data are done
         """
 
-        value = self.data[self.position]
+        c_val = self.data[self.position]
 
         if action == 2:  # sell / short
             self.action = SELL
-            self.short_actions.append([self.position, value])
+            self.short_actions.append([self.position, c_val])
         elif action == 1:  # buy / long
             self.action = BUY
-            self.long_actions.append([self.position, value])
+            self.long_actions.append([self.position, c_val])
         else:
-            self.action = 0
+            self.action = NEUTRAL
 
-        self.position += 1  # Move the agent to the next timestep
-
+        # If the are still more data to process
         if (self.position + 1) < self.data_size:
-            state = [self.position, value, self.action]
+            # Save the current state
+            state = [self.position, c_val, self.action]
             self.memory.append(state)
 
+            # Move the agent to the next timestep
+            self.position += 1
+
+            # Calculate the reward of the agent
             self.reward = self.get_reward()
             self.epoch_reward += self.reward
 
@@ -75,6 +83,7 @@ class Deng(Environment):
         """
         After each epoch or at a start of a process (train, test, validation) reset the variables.
         """
+        # If its testing phase, save results in a different folder
         if self.testing:
             # if (len(self.memory) != 0):  #if memory is not empty
             #    self.render()
