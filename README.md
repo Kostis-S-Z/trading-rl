@@ -105,6 +105,10 @@ For each model you create a new directory will be created containing many useful
 
 Additionally, a history of the agents trades will show up in your browser using the bokeh environment.
 
+### Note
+
+_Unfortunately, this project is no longer active and I haven't had the chance to work on it for some time now, but I really appreciate that people are interested and I will try my best to answer any questions or fix bugs through pull requests. Note, that my answers might be slow at times since I need a bit of time to re-familiarize myself with the project before moving on to debug._
+
 ### References
 
 1. K. S. Zarkias, N. Passalis, A. Tsantekidis and A. Tefas, "Deep Reinforcement Learning for Financial Trading Using Price Trailing," ICASSP 2019 - 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), Brighton, United Kingdom, 2019, pp. 3067-3071.
