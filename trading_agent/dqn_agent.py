@@ -28,7 +28,7 @@ ENV_NAME = 'trading-rl'
 trailing = 'trailing'
 deng = 'deng'
 
-METHOD = deng  # Choose between environments
+METHOD = trailing  # Choose between environments
 
 directory = str(Path.cwd().parent)  # Get the parent directory of the current working directory
 data_directory = directory + "/data"
