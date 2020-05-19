@@ -1,4 +1,5 @@
 from bokeh.plotting import figure, output_file, show, save
+from bokeh.layouts import column
 import json
 
 
@@ -99,3 +100,41 @@ def plot_train_rewards(folder, rewards, title='train_rewards'):
     p.line(x_axis, y_axis, line_width=2)
 
     show(p)
+
+
+def plot_profit(folder, profit, profit2, values, actions, title='profit_curve', save_only=False):
+    """
+    Plot the q values history of the agent
+    """
+    output_file(folder + '/' + title + '.html')
+
+    s1 = figure(title='Vectorized profits', plot_width=800, plot_height=600)
+    x_axis = range(len(profit))
+    p_axis = [i for i in profit]  # neutral (blue)
+    s1.title.text_font_size = '20pt'
+    s1.line(x_axis, p_axis, line_color="red", line_width=2)
+
+    s2 = figure(title='Cumulative profits', plot_width=800, plot_height=600)
+    x_axis = range(len(profit2))
+    p_axis = [i for i in profit2]  # neutral (blue)
+    s2.title.text_font_size = '20pt'
+    s2.line(x_axis, p_axis, line_color="red", line_width=2)
+
+    s3 = figure(title='Price', plot_width=800, plot_height=600)
+    x_axis = range(len(values))
+    v_axis = [v for v in values]  # neutral (blue)
+    s3.title.text_font_size = '20pt'
+    s3.line(x_axis, v_axis, line_color="cyan", line_width=2)
+
+    s4 = figure(title='Actions', plot_width=800, plot_height=600)
+    x_axis = range(len(actions))
+    a_axis = [a for a in actions]  # neutral (blue)
+    s4.title.text_font_size = '20pt'
+    s4.line(x_axis, a_axis, line_color="blue", line_width=2)
+
+    p = column(s1, s2, s3, s4)
+
+    if save_only:
+        save(p)
+    else:
+        show(p)

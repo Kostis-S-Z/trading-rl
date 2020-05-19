@@ -140,8 +140,22 @@ class Environment(gym.Env):
         """
         Function to calculate PnL based on trades
         """
-        warnings.warn("No method implemented to calculate the PnL! Returning zero...", Warning)
-        return 0
+        # warnings.warn("No method implemented to calculate the PnL! Returning zero...", Warning)
+        # return 0
+        prices_diff = np.concatenate([np.diff(values), [0.0]])
+        correct_actions = []
+        action = actions[0]
+        for i in range(len(actions)):
+            if actions[i] != NEUTRAL:
+                correct_actions.append(actions[i])
+                action = actions[i]
+            else:
+                correct_actions.append(action)
+
+        pnl = np.cumsum([correct_actions * prices_diff])
+        plt.plot_profit(self.folder, pnl, np.cumsum(self.epoch_profit), values, correct_actions)
+        return pnl[-1]
+
 
     def trade(self, c_val):
         """

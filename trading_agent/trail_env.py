@@ -84,8 +84,10 @@ class Trail(Environment):
             self.position += 1
 
             # Calculate the reward of the agent
-            self.reward = self.get_reward()
+            self.reward, self.profit = self.get_reward()
             self.epoch_reward += self.reward
+            self.epoch_profit.append(self.profit)
+
 
             # If the agent gets out of boundaries reset its trade position
             if self.reset_margin:
@@ -129,6 +131,8 @@ class Trail(Environment):
         self.rewards.append(self.epoch_reward)
         # Reset all variables
         self.epoch_reward = 0
+        self.epoch_profit = []
+
         self.memory = []
         self.long_actions = []
         self.short_actions = []
@@ -190,31 +194,43 @@ class Trail(Environment):
         The reward function of the agent. Based on his action calculate a pnl and a fee as a result
         Normalize the reward to a proper range
         """
-
-        c_val = self.data[self.position]  # p(t)
-        up_margin = c_val + self.margin  # p(t) + m
-        down_margin = c_val - self.margin  # p(t) - m
+        up_margin = self.data[self.position] + self.margin
+        c_val = self.data[self.position]
+        pr_val = self.data[self.position - 1]
+        profit = 0
+        down_margin = self.data[self.position] - self.margin
 
         # Because its almost impossible to get the exact number, use an acceptable slack
         if np.abs(c_val - self.value) < 0.00001:
             reward = 1
-        elif self.value <= c_val:  # s(t) < p(t)
-            reward = (self.value - down_margin) / (c_val - down_margin)  # same as ( s(t) - p(t) + m ) / m
+        elif self.value <= c_val:
+            reward = (self.value - down_margin) / (c_val - down_margin)
         else:
-            reward = (self.value - up_margin) / (c_val - up_margin)  # same as (p(t) - s(t) + m ) / m
+            reward = (self.value - up_margin) / (c_val - up_margin)
 
-        if self.ce:  # If there was a change in the financial position (trade action) of the agent, apply a fee
+        change_position_cost = 0.0
+        if self.prev_fin_pos == BUY:
+            profit = c_val - pr_val
+        elif self.prev_fin_pos == SELL:
+            profit = pr_val - c_val
+
+        if self.ce:
             if self.action != self.prev_action:
+                profit -= change_position_cost
                 reward = reward - np.abs(reward * self.cost)
         else:
             if (self.action == BUY or self.action == SELL) and (self.action != self.prev_fin_pos):
+                profit -= change_position_cost
                 reward = reward - np.abs(reward * self.cost)
 
-        if self.dp:  # Add another extra penalty if the trade action was from short to long or from long to short
-            if ((self.prev_action == BUY) and (self.action == SELL)) or ((self.prev_action == SELL) and (self.action == BUY)):
+        if self.dp:
+            if ((self.prev_action == BUY) and (self.action == SELL)) or (
+                    (self.prev_action == SELL) and (self.action == BUY)):
+                profit -= change_position_cost
                 reward = reward - np.abs(reward * self.cost)
 
         self.trade(c_val)
         self.prev_action = self.action
 
-        return reward
+        return reward, profit
+

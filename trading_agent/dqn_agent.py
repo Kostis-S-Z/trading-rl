@@ -83,7 +83,7 @@ NORMALIZE_IN = True  # Normalize the input using z-score scaling
 
 # Algorithm Parameters
 STEPS = 500
-EPOCHS = 10
+EPOCHS = 5
 WINDOW_LENGTH = 100
 ONE_HOT = True  # Agent Position Awareness
 
