@@ -33,6 +33,9 @@ METHOD = trailing  # Choose between environments
 directory = str(Path.cwd().parent)  # Get the parent directory of the current working directory
 data_directory = directory + "/data"
 
+# Settings
+TRAIN = False  # Train model or only test
+
 # Hardware Parameters
 CPU = True  # Selection between CPU or GPU
 CPU_cores = 1  # If CPU, how many cores
@@ -99,8 +102,8 @@ MEM_SIZE = 100000
 
 PLOT_Q_VALUES = False  # in order to do this you need to edit appropriately the keras files
 
-START_FROM_TRAINED = False  # If you want to already start training from some weights...
-TRAINED_WEIGHTS = None  # Provide here the path to the h5f / hdf5 weight file
+START_FROM_TRAINED = True  # If you want to already start training from some weights...
+TRAINED_WEIGHTS = "trailing/e:100_s:500_w:100_17.5_20:40/weights_epoch_100.h5f"  # Provide here the path to the h5f / hdf5 weight file
 
 now = datetime.datetime.now()
 DATE = str(now.day) + "." + str(now.month) + "_" + str(now.hour) + ":" + str(now.minute)
@@ -159,10 +162,11 @@ def main():
     if START_FROM_TRAINED:
         dqn.load_weights(TRAINED_WEIGHTS)
 
-    if VALIDATE:
-        train_w_validation(env, dqn)
-    else:
-        train(env, dqn)
+    if TRAIN:
+        if VALIDATE:
+            train_w_validation(env, dqn)
+        else:
+            train(env, dqn)
 
     fin_stats(env, STEPS)
     test(env, dqn)
@@ -315,7 +319,8 @@ def write_model_info():
         info['dp'] = DP
         info['reset_from_margin'] = RESET_FROM_MARGIN
 
-    os.makedirs(FOLDER)
+    if not os.path.exists(FOLDER):
+        os.makedirs(FOLDER)
     with open(FOLDER + '/agent_info.json', 'w') as f:
         json.dump(info, f)
 
