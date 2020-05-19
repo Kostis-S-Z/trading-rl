@@ -2,7 +2,7 @@ from bokeh.plotting import figure, output_file, show, save
 import json
 
 
-def plot_actions(folder, memory, long_actions, short_actions, title='agent_actions', trades=None, save_only=True):
+def plot_actions(folder, memory, long_actions, short_actions, title='agent_actions', trades=None, save_only=False):
     """
     Plot the financial positions of the agent in respect to the time series of the exchange rate.
     """

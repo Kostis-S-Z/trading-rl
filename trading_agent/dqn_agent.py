@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 import datetime
 import json
+import numpy.random as random
 
 ENV_NAME = 'trading-rl'
 
@@ -34,7 +35,7 @@ directory = str(Path.cwd().parent)  # Get the parent directory of the current wo
 data_directory = directory + "/data"
 
 # Settings
-TRAIN = False  # Train model or only test
+TRAIN = True  # Train model or only test
 
 # Hardware Parameters
 CPU = True  # Selection between CPU or GPU
@@ -43,23 +44,24 @@ GPU_mem_use = 0.25  # In both cases the GPU mem is going to be used, choose frac
 
 # Data Parameters
 train_data = data_directory + '/train_data.npy'  # path to training data
-MAX_DATA_SIZE = 12000  # Maximum size of data
+MAX_DATA_SIZE = 54139  # Maximum size of data
 DATA_SIZE = MAX_DATA_SIZE  # Size of data you want to use for training
 
 test_data = data_directory + '/test_data.npy'  # path to test data
 TEST_EPOCHS = 1  # How many test runs / epochs
 TEST_POINTS = [0]  # From which point in the time series to start in each epoch
-TEST_STEPS = 2000  # For how many points to run the epoch
+TEST_STEPS = 8000  # For how many points to run the epoch
 
 # Validation Data
 VALIDATE = False  # Use a validation set if available
 VAL_DATA = data_directory + '/validation_data.npy'  # path to validation data set
-VAL_SIZE = None  # Set the size of the validation data you want to use
-TEST_EPOCHS_GEN = None  # How many epochs for validation
-TEST_STEPS_GEN = None  # How many steps in each epoch for validation
+VAL_SIZE = 18046  # Set the size of the validation data you want to use
+TEST_EPOCHS_GEN = 3  # How many epochs for validation
+TEST_STEPS_GEN = 2016  # How many steps in each epoch for validation (24 * 7 * 4) = 3 months
 
 # Initialize random starts within the validation data
-VAL_STARTS = None  # random.randint(low=0, high=VAL_SIZE-TEST_STEPS_GEN-1, size=TEST_EPOCHS_GEN)
+# VAL_STARTS = None  # random.randint(low=0, high=VAL_SIZE-TEST_STEPS_GEN-1, size=TEST_EPOCHS_GEN)
+VAL_STARTS = random.randint(low=0, high=VAL_SIZE-TEST_STEPS_GEN-1, size=TEST_EPOCHS_GEN)
 
 # Environment Parameters
 # 1: Trailing
@@ -81,7 +83,7 @@ NORMALIZE_IN = True  # Normalize the input using z-score scaling
 
 # Algorithm Parameters
 STEPS = 500
-EPOCHS = 100
+EPOCHS = 10
 WINDOW_LENGTH = 100
 ONE_HOT = True  # Agent Position Awareness
 
@@ -102,7 +104,7 @@ MEM_SIZE = 100000
 
 PLOT_Q_VALUES = False  # in order to do this you need to edit appropriately the keras files
 
-START_FROM_TRAINED = True  # If you want to already start training from some weights...
+START_FROM_TRAINED = False  # If you want to already start training from some weights...
 TRAINED_WEIGHTS = "trailing/e:100_s:500_w:100_17.5_20:40/weights_epoch_100.h5f"  # Provide here the path to the h5f / hdf5 weight file
 
 now = datetime.datetime.now()
@@ -234,8 +236,8 @@ def train_w_validation(env, dqn):
                 best_reward = epoch_rewards
                 print("BEST EPOCH: " + best_epoch + " with: " + str(best_reward))
 
-    path = directory + '/' + filepath + best_epoch
-    new_path = directory + '/' + env.folder + '/' + best_epoch
+    path = directory + '/trading_agent/'  + filepath + best_epoch
+    new_path = directory + '/trading_agent/' + env.folder + '/' + best_epoch
     os.rename(path, new_path)
     print("Loading: " + new_path)
     dqn.load_weights(new_path)
